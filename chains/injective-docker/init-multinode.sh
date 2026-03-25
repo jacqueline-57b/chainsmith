@@ -226,10 +226,20 @@ echo ""
 # Step 8: Create gentx for each validator
 # ----------------------------------------------------------
 echo "📝 Step 8/${TOTAL_STEPS}: Creating gentx for each validator..."
+echo "   Detecting gentx command variant..."
+# Detect which command variant works: `genesis gentx` vs `gentx`
+GENTX_PREFIX=""
+if docker run --rm --entrypoint injectived -v "inj_validator1_home:${INJ_HOME}" "$IMAGE" genesis --help 2>&1 | grep -q gentx; then
+  GENTX_PREFIX="genesis"
+  echo "   Using: injectived genesis gentx"
+else
+  echo "   Using: injectived gentx"
+fi
+
 for i in $(seq 1 $NUM_VALIDATORS); do
   docker run --rm --entrypoint injectived \
     -v "inj_validator${i}_home:${INJ_HOME}" "$IMAGE" \
-    gentx validator${i} ${VALIDATOR_STAKE} \
+    ${GENTX_PREFIX} gentx validator${i} ${VALIDATOR_STAKE} \
       --chain-id ${CHAIN_ID} --keyring-backend test --home "${INJ_HOME}"
   echo "   ✅ Validator $i: gentx created"
 done
@@ -249,7 +259,7 @@ done
 
 docker run --rm --entrypoint injectived \
   -v "inj_validator1_home:${INJ_HOME}" "$IMAGE" \
-  collect-gentxs --home "${INJ_HOME}"
+  ${GENTX_PREFIX} collect-gentxs --home "${INJ_HOME}"
 echo "   ✅ Genesis finalized with all gentxs"
 echo ""
 
