@@ -44,9 +44,16 @@ while [ $WAITED -lt $MAX_WAIT ]; do
 done
 
 if [ $WAITED -ge $MAX_WAIT ]; then
-    echo "   ⚠️  Timeout waiting for blocks. Check logs:"
-    echo "   1. Check logs:   docker compose logs osmosis-validator-0"
-    echo "   2. Check status: docker compose ps"
+    echo "   ⚠️  Timeout waiting for blocks."
+    echo ""
+    echo "=== Container status ==="
+    docker compose ps -a
+    echo ""
+    echo "=== osmosis-validator-0 logs (last 80 lines) ==="
+    docker compose logs osmosis-validator-0 --tail=80 2>/dev/null || true
+    echo ""
+    echo "=== osmosis-validator-1 logs (last 30 lines) ==="
+    docker compose logs osmosis-validator-1 --tail=30 2>/dev/null || true
     exit 1
 fi
 
