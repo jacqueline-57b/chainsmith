@@ -216,7 +216,9 @@ jobs:
             # ─── Test Configuration ─────────────────────────────────
             - name: Generate test configuration
               run: |
-                  jq --arg pk "${TEST_WALLET_PRIVATE_KEY}" '
+                  # Use TEST_WALLET_PRIVATE_KEY if set, otherwise default to Hardhat Account #0
+                  PK="${TEST_WALLET_PRIVATE_KEY:-ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80}"
+                  jq --arg pk "$PK" '
                     map_values(if type == "object" and has("founderWallet") then .founderWallet.privateKey = $pk else . end)
                   ' tests/config.ci.json > tests/config.json
 
