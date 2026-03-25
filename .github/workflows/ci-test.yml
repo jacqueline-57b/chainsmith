@@ -111,7 +111,7 @@ jobs:
                     git clone --depth 1 https://github.com/xrplevm/node.git node
                   elif [ "${CHAIN_ENV}" = "osmosis-docker" ]; then
                     echo "Building Osmosis Docker image from source..."
-                    git clone --depth 1 --branch v31.0.1 https://github.com/osmosis-labs/osmosis.git /tmp/osmosis-src
+                    GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 --branch v31.0.1 https://github.com/osmosis-labs/osmosis.git /tmp/osmosis-src
                     cd /tmp/osmosis-src
                     DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build \
                       --build-arg RUNNER_IMAGE=golang:1.23-alpine3.20 \
