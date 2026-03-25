@@ -131,8 +131,14 @@ osmosisd collect-gentxs --home /data/node0 2>/dev/null
 echo "🌐 Configuring network peers..."
 PEERS=""
 for i in 0 1 2 3; do
-    NODE_ID=$(osmosisd tendermint show-node-id --home "/data/node$i" 2>/dev/null || \
-              osmosisd comet show-node-id --home "/data/node$i" 2>/dev/null)
+    NODE_ID=$(osmosisd cometbft show-node-id --home "/data/node$i" 2>/dev/null || \
+              osmosisd comet show-node-id --home "/data/node$i" 2>/dev/null || \
+              osmosisd tendermint show-node-id --home "/data/node$i" 2>/dev/null)
+    if [ -z "$NODE_ID" ]; then
+        echo "   ❌ Failed to get node ID for validator-$i"
+        exit 1
+    fi
+    echo "   validator-$i node ID: $NODE_ID"
     [ -n "$PEERS" ] && PEERS="$PEERS,"
     PEERS="${PEERS}${NODE_ID}@osmosis-validator-$i:26656"
 done
