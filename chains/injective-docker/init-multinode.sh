@@ -148,17 +148,13 @@ echo ""
 # ----------------------------------------------------------
 echo "📝 Step 5/${TOTAL_STEPS}: Adding genesis accounts..."
 
-# Try both command variants: `genesis add-genesis-account` (Cosmos SDK v0.50+) and `add-genesis-account` (legacy)
 add_genesis_account() {
   local vol="$1"
   local account="$2"
   local amount="$3"
   docker run --rm --entrypoint injectived \
-    -v "${vol}:${INJ_HOME}" "$IMAGE" genesis add-genesis-account "$account" "$amount" \
-      --keyring-backend test --home "${INJ_HOME}" 2>/dev/null || \
-  docker run --rm --entrypoint injectived \
     -v "${vol}:${INJ_HOME}" "$IMAGE" add-genesis-account "$account" "$amount" \
-      --keyring-backend test --home "${INJ_HOME}"
+      --chain-id ${CHAIN_ID} --keyring-backend test --home "${INJ_HOME}"
 }
 
 add_genesis_account "inj_validator1_home" "${FOUNDER_ADDR}" "${FOUNDER_BALANCE}"
@@ -231,11 +227,6 @@ echo ""
 # ----------------------------------------------------------
 echo "📝 Step 8/${TOTAL_STEPS}: Creating gentx for each validator..."
 for i in $(seq 1 $NUM_VALIDATORS); do
-  # Try `genesis gentx` (Cosmos SDK v0.50+) then fallback to `gentx` (legacy)
-  docker run --rm --entrypoint injectived \
-    -v "inj_validator${i}_home:${INJ_HOME}" "$IMAGE" \
-    genesis gentx validator${i} ${VALIDATOR_STAKE} \
-      --chain-id ${CHAIN_ID} --keyring-backend test --home "${INJ_HOME}" 2>/dev/null || \
   docker run --rm --entrypoint injectived \
     -v "inj_validator${i}_home:${INJ_HOME}" "$IMAGE" \
     gentx validator${i} ${VALIDATOR_STAKE} \
@@ -256,10 +247,6 @@ for i in $(seq 2 $NUM_VALIDATORS); do
   echo "   ✅ Validator $i gentx → node1"
 done
 
-# Try `genesis collect-gentxs` (Cosmos SDK v0.50+) then fallback to `collect-gentxs` (legacy)
-docker run --rm --entrypoint injectived \
-  -v "inj_validator1_home:${INJ_HOME}" "$IMAGE" \
-  genesis collect-gentxs --home "${INJ_HOME}" 2>/dev/null || \
 docker run --rm --entrypoint injectived \
   -v "inj_validator1_home:${INJ_HOME}" "$IMAGE" \
   collect-gentxs --home "${INJ_HOME}"
