@@ -129,11 +129,17 @@ done
 osmosisd collect-gentxs --home /data/node0 2>/dev/null
 
 echo "🌐 Configuring network peers..."
+get_node_id() {
+    # node ID = hex(SHA256(pubkey)[:20])
+    # Ed25519 key in node_key.json is 64 bytes: first 32 = privkey, last 32 = pubkey
+    jq -r '.priv_key.value' "$1/config/node_key.json" | \
+        base64 -d | dd bs=1 skip=32 2>/dev/null | \
+        sha256sum | cut -c 1-40
+}
+
 PEERS=""
 for i in 0 1 2 3; do
-    NODE_ID=$(osmosisd cometbft show-node-id --home "/data/node$i" 2>/dev/null || \
-              osmosisd comet show-node-id --home "/data/node$i" 2>/dev/null || \
-              osmosisd tendermint show-node-id --home "/data/node$i" 2>/dev/null)
+    NODE_ID=$(get_node_id "/data/node$i")
     if [ -z "$NODE_ID" ]; then
         echo "   ❌ Failed to get node ID for validator-$i"
         exit 1
