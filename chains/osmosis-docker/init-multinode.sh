@@ -114,10 +114,11 @@ done
 
 echo "📜 Creating gentxs..."
 for i in 0 1 2 3; do
+    echo "   Creating gentx for validator-$i..."
     osmosisd gentx "validator-$i" 500000000uosmo \
         --keyring-backend=test \
         --chain-id="$CHAIN_ID" \
-        --home "/data/node$i" 2>/dev/null
+        --home "/data/node$i"
 done
 
 # Collect all gentxs on node0
