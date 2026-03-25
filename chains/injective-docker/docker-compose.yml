@@ -14,7 +14,7 @@
 services:
     # ============ Validator 1 ============
     inj-validator1:
-        image: injectivelabs/injective-core:${INJ_TAG:-v1.14.1}
+        image: injectivelabs/injective-core:${INJ_TAG:-v1.18.2}
         container_name: inj-validator1
         restart: unless-stopped
         networks:
@@ -49,7 +49,7 @@ services:
 
     # ============ Validator 2 ============
     inj-validator2:
-        image: injectivelabs/injective-core:${INJ_TAG:-v1.14.1}
+        image: injectivelabs/injective-core:${INJ_TAG:-v1.18.2}
         container_name: inj-validator2
         restart: unless-stopped
         networks:
@@ -82,7 +82,7 @@ services:
 
     # ============ Validator 3 ============
     inj-validator3:
-        image: injectivelabs/injective-core:${INJ_TAG:-v1.14.1}
+        image: injectivelabs/injective-core:${INJ_TAG:-v1.18.2}
         container_name: inj-validator3
         restart: unless-stopped
         networks:
@@ -115,7 +115,7 @@ services:
 
     # ============ Validator 4 ============
     inj-validator4:
-        image: injectivelabs/injective-core:${INJ_TAG:-v1.14.1}
+        image: injectivelabs/injective-core:${INJ_TAG:-v1.18.2}
         container_name: inj-validator4
         restart: unless-stopped
         networks:

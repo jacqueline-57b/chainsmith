@@ -25,7 +25,7 @@
 
 set -e
 
-IMAGE="injectivelabs/injective-core:${INJ_TAG:-v1.14.1}"
+IMAGE="injectivelabs/injective-core:${INJ_TAG:-v1.18.2}"
 CHAIN_ID="injective-local-1"
 INJ_HOME="/root/.injectived"
 DENOM="inj"

@@ -111,8 +111,8 @@ jobs:
                     git clone --depth 1 https://github.com/xrplevm/node.git node
                   elif [ "${CHAIN_ENV}" = "injective-docker" ]; then
                     echo "Pulling Injective Docker image..."
-                    DOCKER_DEFAULT_PLATFORM=linux/amd64 docker pull injectivelabs/injective-core:v1.14.1
-                    echo "injectivelabs/injective-core:v1.14.1 pulled successfully"
+                    DOCKER_DEFAULT_PLATFORM=linux/amd64 docker pull injectivelabs/injective-core:v1.18.2
+                    echo "injectivelabs/injective-core:v1.18.2 pulled successfully"
                   fi
 
             - name: Initialize multinode localnet
