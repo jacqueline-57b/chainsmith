@@ -148,16 +148,29 @@ echo ""
 # ----------------------------------------------------------
 echo "📝 Step 5/${TOTAL_STEPS}: Adding genesis accounts..."
 
-run_inj_quiet "inj_validator1_home" add-genesis-account "${FOUNDER_ADDR}" "${FOUNDER_BALANCE}" --keyring-backend test
+# Try both command variants: `genesis add-genesis-account` (Cosmos SDK v0.50+) and `add-genesis-account` (legacy)
+add_genesis_account() {
+  local vol="$1"
+  local account="$2"
+  local amount="$3"
+  docker run --rm --entrypoint injectived \
+    -v "${vol}:${INJ_HOME}" "$IMAGE" genesis add-genesis-account "$account" "$amount" \
+      --keyring-backend test --home "${INJ_HOME}" 2>/dev/null || \
+  docker run --rm --entrypoint injectived \
+    -v "${vol}:${INJ_HOME}" "$IMAGE" add-genesis-account "$account" "$amount" \
+      --keyring-backend test --home "${INJ_HOME}"
+}
+
+add_genesis_account "inj_validator1_home" "${FOUNDER_ADDR}" "${FOUNDER_BALANCE}"
 echo "   ✅ Founder account added"
 
 for i in $(seq 1 $NUM_VALIDATORS); do
   idx=$((i-1))
   ADDR="${VALIDATOR_ADDRS[$idx]}"
   if [ $i -eq 1 ]; then
-    run_inj_quiet "inj_validator1_home" add-genesis-account validator1 "${VALIDATOR_BALANCE}" --keyring-backend test
+    add_genesis_account "inj_validator1_home" "validator1" "${VALIDATOR_BALANCE}"
   else
-    run_inj_quiet "inj_validator1_home" add-genesis-account "${ADDR}" "${VALIDATOR_BALANCE}" --keyring-backend test
+    add_genesis_account "inj_validator1_home" "${ADDR}" "${VALIDATOR_BALANCE}"
   fi
   echo "   ✅ Validator $i account added"
 done
@@ -218,8 +231,15 @@ echo ""
 # ----------------------------------------------------------
 echo "📝 Step 8/${TOTAL_STEPS}: Creating gentx for each validator..."
 for i in $(seq 1 $NUM_VALIDATORS); do
-  run_inj_quiet "inj_validator${i}_home" gentx validator${i} ${VALIDATOR_STAKE} \
-    --chain-id ${CHAIN_ID} --keyring-backend test
+  # Try `genesis gentx` (Cosmos SDK v0.50+) then fallback to `gentx` (legacy)
+  docker run --rm --entrypoint injectived \
+    -v "inj_validator${i}_home:${INJ_HOME}" "$IMAGE" \
+    genesis gentx validator${i} ${VALIDATOR_STAKE} \
+      --chain-id ${CHAIN_ID} --keyring-backend test --home "${INJ_HOME}" 2>/dev/null || \
+  docker run --rm --entrypoint injectived \
+    -v "inj_validator${i}_home:${INJ_HOME}" "$IMAGE" \
+    gentx validator${i} ${VALIDATOR_STAKE} \
+      --chain-id ${CHAIN_ID} --keyring-backend test --home "${INJ_HOME}"
   echo "   ✅ Validator $i: gentx created"
 done
 echo ""
@@ -236,7 +256,13 @@ for i in $(seq 2 $NUM_VALIDATORS); do
   echo "   ✅ Validator $i gentx → node1"
 done
 
-run_inj_quiet "inj_validator1_home" collect-gentxs
+# Try `genesis collect-gentxs` (Cosmos SDK v0.50+) then fallback to `collect-gentxs` (legacy)
+docker run --rm --entrypoint injectived \
+  -v "inj_validator1_home:${INJ_HOME}" "$IMAGE" \
+  genesis collect-gentxs --home "${INJ_HOME}" 2>/dev/null || \
+docker run --rm --entrypoint injectived \
+  -v "inj_validator1_home:${INJ_HOME}" "$IMAGE" \
+  collect-gentxs --home "${INJ_HOME}"
 echo "   ✅ Genesis finalized with all gentxs"
 echo ""
 
