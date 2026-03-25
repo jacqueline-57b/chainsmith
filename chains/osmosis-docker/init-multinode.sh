@@ -141,8 +141,8 @@ echo "🔧 Distributing genesis and configuring nodes..."
 for i in 0 1 2 3; do
     NODE_HOME="/data/node$i"
 
-    # Copy final genesis to all nodes
-    cp /data/node0/config/genesis.json "$NODE_HOME/config/genesis.json"
+    # Copy final genesis to other nodes (node0 is the source)
+    [ "$i" != "0" ] && cp /data/node0/config/genesis.json "$NODE_HOME/config/genesis.json"
 
     # Bind to all interfaces (required for Docker networking)
     sed -i 's/127\.0\.0\.1/0.0.0.0/g' "$NODE_HOME/config/config.toml"
