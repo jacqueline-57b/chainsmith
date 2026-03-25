@@ -172,6 +172,19 @@ for i in 0 1 2 3; do
     sed -i 's/cors_allowed_origins = \[\]/cors_allowed_origins = ["*"]/' "$NODE_HOME/config/config.toml"
 done
 
+# Export founder private key for test framework
+echo "🔑 Exporting founder private key..."
+yes | osmosisd keys export founder --unarmored-hex --unsafe \
+    --keyring-backend=test --home /data/node0 2>/dev/null > /data/founder_private_key.txt || \
+osmosisd keys export founder --unarmored-hex --unsafe \
+    --keyring-backend=test --home /data/node0 > /data/founder_private_key.txt 2>/dev/null
+FOUNDER_PK=$(cat /data/founder_private_key.txt | tr -d '[:space:]')
+if [ -n "$FOUNDER_PK" ]; then
+    echo "   ✅ Founder private key exported"
+else
+    echo "   ⚠️  Could not export founder private key (tests requiring tx signing may fail)"
+fi
+
 echo ""
 echo "✅ Genesis initialization complete!"
 echo "   Chain ID:  $CHAIN_ID"

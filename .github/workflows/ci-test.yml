@@ -221,9 +221,17 @@ jobs:
             # ─── Test Configuration ─────────────────────────────────
             - name: Generate test configuration
               run: |
-                  jq --arg pk "${TEST_WALLET_PRIVATE_KEY}" '
-                    map_values(if type == "object" and has("founderWallet") then .founderWallet.privateKey = $pk else . end)
-                  ' tests/config.ci.json > tests/config.json
+                  if [ "${CHAIN_ENV}" = "osmosis-docker" ] && [ -f "chains/osmosis-docker/data/founder_private_key.txt" ]; then
+                    COSMOS_PK=$(cat chains/osmosis-docker/data/founder_private_key.txt | tr -d '[:space:]')
+                    jq --arg pk "$COSMOS_PK" '
+                      map_values(if type == "object" and has("founderWallet") then .founderWallet.privateKey = $pk else . end)
+                    ' tests/config.ci.json > tests/config.json
+                    echo "✅ Injected Cosmos founder private key for osmosis-docker"
+                  else
+                    jq --arg pk "${TEST_WALLET_PRIVATE_KEY}" '
+                      map_values(if type == "object" and has("founderWallet") then .founderWallet.privateKey = $pk else . end)
+                    ' tests/config.ci.json > tests/config.json
+                  fi
 
             - name: Copy and generate load test configuration
               run: |

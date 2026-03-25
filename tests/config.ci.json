@@ -541,7 +541,7 @@
         "description": "Osmosis Local Multi-Validator Devnet (4 validators, pure Cosmos/CometBFT)",
         "supportedCosmosModules": ["staking", "staking_delegation", "slashing", "mint"],
         "consensusLayer": "cosmos",
-        "executeLayer": "evm",
+        "executeLayer": "cosmos",
         "chainId": "localosmosis",
         "executeLayerHttpRpcUrl": "http://localhost:1317",
         "consensusLayerRpcUrl": "http://localhost:26657",
