@@ -280,21 +280,21 @@ for i in $(seq 1 $NUM_VALIDATORS); do
       sed -i "s|timeout_propose = \"3s\"|timeout_propose = \"2s\"|" $CONFIG
       sed -i "s|cors_allowed_origins = \[\]|cors_allowed_origins = [\"*\"]|" $CONFIG
 
-      # === Cosmos app.toml ===
+      # === Cosmos REST API [api] — move to port 10337 to avoid conflict with EVM RPC on 1317 ===
       sed -i "/\[api\]/,/\[/{s|enable = false|enable = true|}" $APP
-      sed -i "s|address = \"tcp://localhost:1317\"|address = \"tcp://0.0.0.0:1317\"|" $APP
-      sed -i "s|address = \"tcp://127.0.0.1:1317\"|address = \"tcp://0.0.0.0:1317\"|" $APP
+      sed -i "s|address = \"tcp://localhost:1317\"|address = \"tcp://0.0.0.0:10337\"|" $APP
+      sed -i "s|address = \"tcp://0.0.0.0:1317\"|address = \"tcp://0.0.0.0:10337\"|" $APP
       sed -i "s|enabled-unsafe-cors = false|enabled-unsafe-cors = true|" $APP
 
-      sed -i "s|address = \"localhost:9090\"|address = \"0.0.0.0:9090\"|" $APP
-      sed -i "s|address = \"127.0.0.1:9090\"|address = \"0.0.0.0:9090\"|" $APP
+      # === gRPC — bind to 0.0.0.0 on port 9900 ===
+      sed -i "s|address = \"localhost:9090\"|address = \"0.0.0.0:9900\"|" $APP
+      sed -i "s|address = \"0.0.0.0:9090\"|address = \"0.0.0.0:9900\"|" $APP
 
-      # === EVM JSON-RPC ===
-      sed -i "/\[json-rpc\]/,/\[/{s|enable = false|enable = true|}" $APP
-      sed -i "s|address = \"127.0.0.1:8545\"|address = \"0.0.0.0:8545\"|" $APP
-      sed -i "s|address = \"localhost:8545\"|address = \"0.0.0.0:8545\"|" $APP
-      sed -i "s|ws-address = \"127.0.0.1:8546\"|ws-address = \"0.0.0.0:8546\"|" $APP
-      sed -i "s|ws-address = \"localhost:8546\"|ws-address = \"0.0.0.0:8546\"|" $APP
+      # === EVM JSON-RPC [evm-rpc] — Injective uses [evm-rpc] not [json-rpc] ===
+      sed -i "/\[evm-rpc\]/,/\[/{s|enable = false|enable = true|}" $APP
+      sed -i "s|address = \"127.0.0.1:1317\"|address = \"0.0.0.0:1317\"|" $APP
+      sed -i "s|ws-address = \"127.0.0.1:1318\"|ws-address = \"0.0.0.0:1318\"|" $APP
+      sed -i "s|ws-address = \"0.0.0.0:1318\"|ws-address = \"0.0.0.0:1318\"|" $APP
 
       sed -i "s|minimum-gas-prices = \"\"|minimum-gas-prices = \"500000000inj\"|" $APP
     ' 2>/dev/null

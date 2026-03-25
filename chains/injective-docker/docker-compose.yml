@@ -2,7 +2,8 @@
 # Injective 4-Validator Localnet for ChainSmith Testing
 #
 # Architecture: Each validator = 1 injectived container (CometBFT consensus + EVM in same process)
-# Injective has native EVM support with JSON-RPC, similar to Kii/Kava (Ethermint-based).
+# Injective EVM RPC uses [evm-rpc] section (not [json-rpc]) — port 1317 by default.
+# Cosmos REST API is moved to port 10337 to avoid conflict.
 #
 # Usage:
 #   1. Init: ./init-multinode.sh
@@ -40,12 +41,12 @@ services:
               source: inj_validator1_home
               target: /root/.injectived
         ports:
-            - '26657:26657' # CometBFT RPC
-            - '1317:1317'   # Cosmos REST API
-            - '8545:8545'   # EVM JSON-RPC
-            - '8546:8546'   # EVM WebSocket
-            - '9900:9900'   # gRPC
-            - '26656:26656' # P2P
+            - '26657:26657'   # CometBFT RPC
+            - '1317:1317'     # EVM JSON-RPC (Injective [evm-rpc] default)
+            - '1318:1318'     # EVM WebSocket
+            - '10337:10337'   # Cosmos REST API
+            - '9900:9900'     # gRPC
+            - '26656:26656'   # P2P
 
     # ============ Validator 2 ============
     inj-validator2:
@@ -77,7 +78,8 @@ services:
         ports:
             - '36657:26657'
             - '21317:1317'
-            - '28545:8545'
+            - '21318:1318'
+            - '20337:10337'
             - '36656:26656'
 
     # ============ Validator 3 ============
@@ -110,7 +112,8 @@ services:
         ports:
             - '46657:26657'
             - '31317:1317'
-            - '38545:8545'
+            - '31318:1318'
+            - '30337:10337'
             - '46656:26656'
 
     # ============ Validator 4 ============
@@ -143,7 +146,8 @@ services:
         ports:
             - '56657:26657'
             - '41317:1317'
-            - '48545:8545'
+            - '41318:1318'
+            - '40337:10337'
             - '56656:26656'
 
 volumes:

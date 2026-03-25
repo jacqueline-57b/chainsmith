@@ -55,7 +55,7 @@ VALIDATOR_COUNT=$(curl -s http://localhost:26657/validators 2>/dev/null | \
   grep -o '"total":"[0-9]*"' | \
   grep -o '[0-9]*' | head -1 || echo "unknown")
 
-EVM_OK=$(curl -s -X POST http://localhost:8545 \
+EVM_OK=$(curl -s -X POST http://localhost:1317 \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' 2>/dev/null | \
   grep -c "result" 2>/dev/null || true)
@@ -78,15 +78,15 @@ echo "   EVM JSON-RPC:    ${EVM_STATUS}"
 echo ""
 echo "📍 Validator 1 Endpoints (primary):"
 echo "   CometBFT RPC:   http://localhost:26657"
-echo "   Cosmos REST:     http://localhost:1317"
-echo "   EVM JSON-RPC:    http://localhost:8545"
-echo "   EVM WebSocket:   ws://localhost:8546"
-echo "   gRPC:            localhost:9090"
+echo "   EVM JSON-RPC:    http://localhost:1317  (Injective [evm-rpc])"
+echo "   EVM WebSocket:   ws://localhost:1318"
+echo "   Cosmos REST:     http://localhost:10337"
+echo "   gRPC:            localhost:9900"
 echo ""
 echo "📍 Other Validators:"
-echo "   Validator 2:     RPC=:36657  REST=:21317  EVM=:28545"
-echo "   Validator 3:     RPC=:46657  REST=:31317  EVM=:38545"
-echo "   Validator 4:     RPC=:56657  REST=:41317  EVM=:48545"
+echo "   Validator 2:     RPC=:36657  EVM=:21317  REST=:20337"
+echo "   Validator 3:     RPC=:46657  EVM=:31317  REST=:30337"
+echo "   Validator 4:     RPC=:56657  EVM=:41317  REST=:40337"
 echo ""
 echo "To stop: ./stop-multinode.sh"
 echo ""
