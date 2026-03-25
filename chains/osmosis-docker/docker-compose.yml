@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+    osmosis-validator-0:
+        image: osmosis:local
+        container_name: osmosis-validator-0
+        volumes:
+            - ./data/node0:/osmosis/.osmosisd
+        command: ['start']
+        ports:
+            - '26657:26657' # CometBFT RPC
+            - '1317:1317' # Cosmos REST API
+            - '9090:9090' # gRPC
+        networks:
+            - osmosis-net
+
+    osmosis-validator-1:
+        image: osmosis:local
+        container_name: osmosis-validator-1
+        volumes:
+            - ./data/node1:/osmosis/.osmosisd
+        command: ['start']
+        ports:
+            - '36657:26657'
+            - '21317:1317'
+            - '29090:9090'
+        networks:
+            - osmosis-net
+        depends_on:
+            - osmosis-validator-0
+
+    osmosis-validator-2:
+        image: osmosis:local
+        container_name: osmosis-validator-2
+        volumes:
+            - ./data/node2:/osmosis/.osmosisd
+        command: ['start']
+        ports:
+            - '46657:26657'
+            - '31317:1317'
+            - '39090:9090'
+        networks:
+            - osmosis-net
+        depends_on:
+            - osmosis-validator-0
+
+    osmosis-validator-3:
+        image: osmosis:local
+        container_name: osmosis-validator-3
+        volumes:
+            - ./data/node3:/osmosis/.osmosisd
+        command: ['start']
+        ports:
+            - '56657:26657'
+            - '41317:1317'
+            - '49090:9090'
+        networks:
+            - osmosis-net
+        depends_on:
+            - osmosis-validator-0
+
+networks:
+    osmosis-net:
+        driver: bridge

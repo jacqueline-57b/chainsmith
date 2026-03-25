@@ -536,5 +536,77 @@
             "privateKey": "",
             "privateKeySource": "local"
         }
+    },
+    "osmosis-docker": {
+        "description": "Osmosis Local Multi-Validator Devnet (4 validators, pure Cosmos/CometBFT)",
+        "supportedCosmosModules": ["staking", "staking_delegation", "slashing", "mint"],
+        "consensusLayer": "cosmos",
+        "executeLayer": "evm",
+        "chainId": "localosmosis",
+        "executeLayerHttpRpcUrl": "http://localhost:1317",
+        "consensusLayerRpcUrl": "http://localhost:26657",
+        "consensusLayerHttpRestApiUrl": "http://localhost:1317",
+        "consensusRestApiPathPrefix": "/cosmos",
+        "consensusRestApiVersion": "v1beta1",
+        "executionMethod": "docker",
+        "docker": {
+            "containerPatterns": {
+                "executionLayer": "osmosis-validator-{index}",
+                "consensusLayer": "osmosis-validator-{index}"
+            },
+            "timeout": 30000
+        },
+        "nodes": [
+            {
+                "index": 0,
+                "url": "http://localhost",
+                "type": "validator",
+                "votingPower": 1,
+                "active": true,
+                "executeLayerHttpRpcPort": null,
+                "consensusLayerRpcPort": 26657,
+                "consensusLayerHttpRestApiPort": 1317,
+                "consensusLayerP2pCommPort": 26656
+            },
+            {
+                "index": 1,
+                "url": "http://localhost",
+                "type": "validator",
+                "votingPower": 1,
+                "active": true,
+                "executeLayerHttpRpcPort": null,
+                "consensusLayerRpcPort": 36657,
+                "consensusLayerHttpRestApiPort": 21317,
+                "consensusLayerP2pCommPort": 26656
+            },
+            {
+                "index": 2,
+                "url": "http://localhost",
+                "type": "validator",
+                "votingPower": 1,
+                "active": true,
+                "executeLayerHttpRpcPort": null,
+                "consensusLayerRpcPort": 46657,
+                "consensusLayerHttpRestApiPort": 31317,
+                "consensusLayerP2pCommPort": 26656
+            },
+            {
+                "index": 3,
+                "url": "http://localhost",
+                "type": "validator",
+                "votingPower": 1,
+                "active": true,
+                "executeLayerHttpRpcPort": null,
+                "consensusLayerRpcPort": 56657,
+                "consensusLayerHttpRestApiPort": 41317,
+                "consensusLayerP2pCommPort": 26656
+            }
+        ],
+        "founderWallet": {
+            "name": "osmosis-devnet-faucet",
+            "address": "osmo12smx2wdlyttvyzvzg54y2vnqwq2qjateuf7thj",
+            "privateKey": "",
+            "privateKeySource": "local"
+        }
     }
 }

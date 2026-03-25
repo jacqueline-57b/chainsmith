@@ -20,6 +20,7 @@ on:
                     - kii-docker
                     - tac-docker
                     - xrplevm-docker
+                    - osmosis-docker
             tests:
                 description: 'Run tests'
                 required: false
@@ -46,7 +47,7 @@ jobs:
     test:
         name: Run Tests (${{ inputs.chain || '0g-docker' }})
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 45
         env:
             CHAIN_ENV: ${{ inputs.chain || '0g-docker' }}
             TEST_WALLET_PRIVATE_KEY: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
@@ -108,6 +109,15 @@ jobs:
                   elif [ "${CHAIN_ENV}" = "xrplevm-docker" ]; then
                     echo "Cloning xrplevm node repository..."
                     git clone --depth 1 https://github.com/xrplevm/node.git node
+                  elif [ "${CHAIN_ENV}" = "osmosis-docker" ]; then
+                    echo "Building Osmosis Docker image from source..."
+                    git clone --depth 1 --branch v31.0.1 https://github.com/osmosis-labs/osmosis.git /tmp/osmosis-src
+                    cd /tmp/osmosis-src
+                    DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build \
+                      --build-arg RUNNER_IMAGE=golang:1.23-alpine3.20 \
+                      --build-arg GO_VERSION="1.23" \
+                      -t osmosis:local .
+                    echo "osmosis:local built successfully"
                   fi
 
             - name: Initialize multinode localnet
@@ -134,6 +144,9 @@ jobs:
                     chmod +x init-multinode.sh
                     ./init-multinode.sh
                   elif [ "${CHAIN_ENV}" = "xrplevm-docker" ]; then
+                    chmod +x init-multinode.sh
+                    ./init-multinode.sh
+                  elif [ "${CHAIN_ENV}" = "osmosis-docker" ]; then
                     chmod +x init-multinode.sh
                     ./init-multinode.sh
                   fi
@@ -225,12 +238,12 @@ jobs:
 
             # ─── Run Tests ──────────────────────────────────────────
             - name: Test - Basic
-              if: inputs.tests == 'all' || inputs.tests == 'basic'
+              if: (inputs.tests == 'all' || inputs.tests == 'basic') && inputs.chain != 'osmosis-docker'
               continue-on-error: true
               run: pnpm test:basic
 
             - name: Test - EVM RPC
-              if: inputs.tests == 'all' || inputs.tests == 'rpc:evm'
+              if: (inputs.tests == 'all' || inputs.tests == 'rpc:evm') && inputs.chain != 'osmosis-docker'
               continue-on-error: true
               run: pnpm test:rpc:evm
 
@@ -250,17 +263,17 @@ jobs:
               run: pnpm test:staking:kii
 
             - name: Test - Fault Tolerance
-              if: inputs.tests == 'all' || inputs.tests == 'fault-tolerance'
+              if: (inputs.tests == 'all' || inputs.tests == 'fault-tolerance') && inputs.chain != 'osmosis-docker'
               continue-on-error: true
               run: pnpm test:fault-tolerance
 
             - name: Test - Performance
-              if: inputs.tests == 'all' || inputs.tests == 'performance'
+              if: (inputs.tests == 'all' || inputs.tests == 'performance') && inputs.chain != 'osmosis-docker'
               continue-on-error: true
               run: pnpm test:performance
 
             - name: Test - Load Stress
-              if: inputs.tests == 'all' || inputs.tests == 'load:stress'
+              if: (inputs.tests == 'all' || inputs.tests == 'load:stress') && inputs.chain != 'osmosis-docker'
               continue-on-error: true
               run: pnpm test:load:stress
 
@@ -315,6 +328,12 @@ jobs:
                   elif [ "${CHAIN_ENV}" = "xrplevm-docker" ]; then
                     echo "=== xrplevm node0 logs (last 100 lines) ==="
                     docker compose logs xrplevm-node-0 --tail=100 2>/dev/null || true
+                  elif [ "${CHAIN_ENV}" = "osmosis-docker" ]; then
+                    echo "=== Osmosis validator-0 logs (last 100 lines) ==="
+                    docker compose logs osmosis-validator-0 --tail=100 2>/dev/null || true
+                    echo ""
+                    echo "=== Osmosis validator-1 logs (last 100 lines) ==="
+                    docker compose logs osmosis-validator-1 --tail=100 2>/dev/null || true
                   fi
 
             - name: Stop localnet
