@@ -1,0 +1,164 @@
+# docker-compose.yml
+# Injective 4-Validator Localnet for ChainSmith Testing
+#
+# Architecture: Each validator = 1 injectived container (CometBFT consensus + EVM in same process)
+# Injective has native EVM support with JSON-RPC, similar to Kii/Kava (Ethermint-based).
+#
+# Usage:
+#   1. Init: ./init-multinode.sh
+#   2. Start: ./start-multinode.sh (or: docker compose --env-file .env.multinode -f docker-compose.yml up -d)
+#   3. Check: docker compose --env-file .env.multinode -f docker-compose.yml ps
+#   4. Logs:  docker compose --env-file .env.multinode -f docker-compose.yml logs -f inj-validator1
+#   5. Stop:  ./stop-multinode.sh
+
+services:
+    # ============ Validator 1 ============
+    inj-validator1:
+        image: injectivelabs/injective-core:${INJ_TAG:-v1.14.1}
+        container_name: inj-validator1
+        restart: unless-stopped
+        networks:
+            inj-multi:
+        env_file:
+            - .env.multinode
+        logging:
+            options:
+                max-size: '12m'
+                max-file: '5'
+        entrypoint: ['injectived']
+        command: >
+            start
+            --home /root/.injectived
+            --p2p.laddr "tcp://0.0.0.0:26656"
+            --p2p.persistent_peers "${PERSISTENT_PEERS}"
+            --rpc.laddr "tcp://0.0.0.0:26657"
+            --minimum-gas-prices "500000000inj"
+            --pruning nothing
+            --log_level ${LOG_LEVEL:-info}
+        volumes:
+            - type: volume
+              source: inj_validator1_home
+              target: /root/.injectived
+        ports:
+            - '26657:26657' # CometBFT RPC
+            - '1317:1317'   # Cosmos REST API
+            - '8545:8545'   # EVM JSON-RPC
+            - '8546:8546'   # EVM WebSocket
+            - '9090:9090'   # gRPC
+            - '26656:26656' # P2P
+
+    # ============ Validator 2 ============
+    inj-validator2:
+        image: injectivelabs/injective-core:${INJ_TAG:-v1.14.1}
+        container_name: inj-validator2
+        restart: unless-stopped
+        networks:
+            inj-multi:
+        env_file:
+            - .env.multinode
+        logging:
+            options:
+                max-size: '12m'
+                max-file: '5'
+        entrypoint: ['injectived']
+        command: >
+            start
+            --home /root/.injectived
+            --p2p.laddr "tcp://0.0.0.0:26656"
+            --p2p.persistent_peers "${PERSISTENT_PEERS}"
+            --rpc.laddr "tcp://0.0.0.0:26657"
+            --minimum-gas-prices "500000000inj"
+            --pruning nothing
+            --log_level ${LOG_LEVEL:-info}
+        volumes:
+            - type: volume
+              source: inj_validator2_home
+              target: /root/.injectived
+        ports:
+            - '36657:26657'
+            - '21317:1317'
+            - '28545:8545'
+            - '36656:26656'
+
+    # ============ Validator 3 ============
+    inj-validator3:
+        image: injectivelabs/injective-core:${INJ_TAG:-v1.14.1}
+        container_name: inj-validator3
+        restart: unless-stopped
+        networks:
+            inj-multi:
+        env_file:
+            - .env.multinode
+        logging:
+            options:
+                max-size: '12m'
+                max-file: '5'
+        entrypoint: ['injectived']
+        command: >
+            start
+            --home /root/.injectived
+            --p2p.laddr "tcp://0.0.0.0:26656"
+            --p2p.persistent_peers "${PERSISTENT_PEERS}"
+            --rpc.laddr "tcp://0.0.0.0:26657"
+            --minimum-gas-prices "500000000inj"
+            --pruning nothing
+            --log_level ${LOG_LEVEL:-info}
+        volumes:
+            - type: volume
+              source: inj_validator3_home
+              target: /root/.injectived
+        ports:
+            - '46657:26657'
+            - '31317:1317'
+            - '38545:8545'
+            - '46656:26656'
+
+    # ============ Validator 4 ============
+    inj-validator4:
+        image: injectivelabs/injective-core:${INJ_TAG:-v1.14.1}
+        container_name: inj-validator4
+        restart: unless-stopped
+        networks:
+            inj-multi:
+        env_file:
+            - .env.multinode
+        logging:
+            options:
+                max-size: '12m'
+                max-file: '5'
+        entrypoint: ['injectived']
+        command: >
+            start
+            --home /root/.injectived
+            --p2p.laddr "tcp://0.0.0.0:26656"
+            --p2p.persistent_peers "${PERSISTENT_PEERS}"
+            --rpc.laddr "tcp://0.0.0.0:26657"
+            --minimum-gas-prices "500000000inj"
+            --pruning nothing
+            --log_level ${LOG_LEVEL:-info}
+        volumes:
+            - type: volume
+              source: inj_validator4_home
+              target: /root/.injectived
+        ports:
+            - '56657:26657'
+            - '41317:1317'
+            - '48545:8545'
+            - '56656:26656'
+
+volumes:
+    inj_validator1_home:
+        external: true
+        name: inj_validator1_home
+    inj_validator2_home:
+        external: true
+        name: inj_validator2_home
+    inj_validator3_home:
+        external: true
+        name: inj_validator3_home
+    inj_validator4_home:
+        external: true
+        name: inj_validator4_home
+
+networks:
+    inj-multi:
