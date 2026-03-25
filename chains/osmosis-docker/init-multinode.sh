@@ -90,6 +90,7 @@ jq '
   .app_state.staking.params.unbonding_time = "240s" |
   .app_state.crisis.constant_fee.denom = "uosmo" |
   .app_state.gov.params.voting_period = "60s" |
+  .app_state.gov.params.expedited_voting_period = "30s" |
   .app_state.gov.params.min_deposit[0].denom = "uosmo" |
   .app_state.mint.params.mint_denom = "uosmo" |
   .app_state.txfees.basedenom = "uosmo" |
