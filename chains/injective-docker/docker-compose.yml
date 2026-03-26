@@ -33,7 +33,7 @@ services:
             --p2p.laddr "tcp://0.0.0.0:26656"
             --p2p.persistent_peers "${PERSISTENT_PEERS}"
             --rpc.laddr "tcp://0.0.0.0:26657"
-            --minimum-gas-prices "500000000inj"
+            --minimum-gas-prices "160000000inj"
             --pruning nothing
             --log-level ${LOG_LEVEL:-info}
         volumes:
@@ -41,12 +41,12 @@ services:
               source: inj_validator1_home
               target: /root/.injectived
         ports:
-            - '26657:26657'   # CometBFT RPC
-            - '1317:1317'     # EVM JSON-RPC (Injective [evm-rpc] default)
-            - '1318:1318'     # EVM WebSocket
-            - '10337:10337'   # Cosmos REST API
-            - '9900:9900'     # gRPC
-            - '26656:26656'   # P2P
+            - '26657:26657' # CometBFT RPC
+            - '8545:8545' # EVM JSON-RPC ([json-rpc] section)
+            - '8546:8546' # EVM WebSocket
+            - '1317:1317' # Cosmos REST API
+            - '9900:9900' # gRPC
+            - '26656:26656' # P2P
 
     # ============ Validator 2 ============
     inj-validator2:
@@ -68,7 +68,7 @@ services:
             --p2p.laddr "tcp://0.0.0.0:26656"
             --p2p.persistent_peers "${PERSISTENT_PEERS}"
             --rpc.laddr "tcp://0.0.0.0:26657"
-            --minimum-gas-prices "500000000inj"
+            --minimum-gas-prices "160000000inj"
             --pruning nothing
             --log-level ${LOG_LEVEL:-info}
         volumes:
@@ -77,9 +77,8 @@ services:
               target: /root/.injectived
         ports:
             - '36657:26657'
+            - '28545:8545'
             - '21317:1317'
-            - '21318:1318'
-            - '20337:10337'
             - '36656:26656'
 
     # ============ Validator 3 ============
@@ -102,7 +101,7 @@ services:
             --p2p.laddr "tcp://0.0.0.0:26656"
             --p2p.persistent_peers "${PERSISTENT_PEERS}"
             --rpc.laddr "tcp://0.0.0.0:26657"
-            --minimum-gas-prices "500000000inj"
+            --minimum-gas-prices "160000000inj"
             --pruning nothing
             --log-level ${LOG_LEVEL:-info}
         volumes:
@@ -111,9 +110,8 @@ services:
               target: /root/.injectived
         ports:
             - '46657:26657'
+            - '38545:8545'
             - '31317:1317'
-            - '31318:1318'
-            - '30337:10337'
             - '46656:26656'
 
     # ============ Validator 4 ============
@@ -136,7 +134,7 @@ services:
             --p2p.laddr "tcp://0.0.0.0:26656"
             --p2p.persistent_peers "${PERSISTENT_PEERS}"
             --rpc.laddr "tcp://0.0.0.0:26657"
-            --minimum-gas-prices "500000000inj"
+            --minimum-gas-prices "160000000inj"
             --pruning nothing
             --log-level ${LOG_LEVEL:-info}
         volumes:
@@ -145,9 +143,8 @@ services:
               target: /root/.injectived
         ports:
             - '56657:26657'
+            - '48545:8545'
             - '41317:1317'
-            - '41318:1318'
-            - '40337:10337'
             - '56656:26656'
 
 volumes:

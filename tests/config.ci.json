@@ -542,10 +542,10 @@
         "supportedCosmosModules": ["staking", "staking_delegation", "slashing", "mint"],
         "consensusLayer": "cosmos",
         "executeLayer": "evm",
-        "chainId": "injective-local-1",
-        "executeLayerHttpRpcUrl": "http://localhost:1317",
+        "chainId": "injective-1337",
+        "executeLayerHttpRpcUrl": "http://localhost:8545",
         "consensusLayerRpcUrl": "http://localhost:26657",
-        "consensusLayerHttpRestApiUrl": "http://localhost:10337",
+        "consensusLayerHttpRestApiUrl": "http://localhost:1317",
         "consensusRestApiPathPrefix": "/cosmos",
         "consensusRestApiVersion": "v1beta1",
         "executionMethod": "docker",
@@ -563,9 +563,9 @@
                 "type": "validator",
                 "votingPower": 1,
                 "active": true,
-                "executeLayerHttpRpcPort": 1317,
+                "executeLayerHttpRpcPort": 8545,
                 "consensusLayerRpcPort": 26657,
-                "consensusLayerHttpRestApiPort": 10337,
+                "consensusLayerHttpRestApiPort": 1317,
                 "consensusLayerP2pCommPort": 26656
             },
             {
@@ -574,9 +574,9 @@
                 "type": "validator",
                 "votingPower": 1,
                 "active": true,
-                "executeLayerHttpRpcPort": 21317,
+                "executeLayerHttpRpcPort": 28545,
                 "consensusLayerRpcPort": 36657,
-                "consensusLayerHttpRestApiPort": 20337,
+                "consensusLayerHttpRestApiPort": 21317,
                 "consensusLayerP2pCommPort": 26656
             },
             {
@@ -585,9 +585,9 @@
                 "type": "validator",
                 "votingPower": 1,
                 "active": true,
-                "executeLayerHttpRpcPort": 31317,
+                "executeLayerHttpRpcPort": 38545,
                 "consensusLayerRpcPort": 46657,
-                "consensusLayerHttpRestApiPort": 30337,
+                "consensusLayerHttpRestApiPort": 31317,
                 "consensusLayerP2pCommPort": 26656
             },
             {
@@ -596,9 +596,9 @@
                 "type": "validator",
                 "votingPower": 1,
                 "active": true,
-                "executeLayerHttpRpcPort": 41317,
+                "executeLayerHttpRpcPort": 48545,
                 "consensusLayerRpcPort": 56657,
-                "consensusLayerHttpRestApiPort": 40337,
+                "consensusLayerHttpRestApiPort": 41317,
                 "consensusLayerP2pCommPort": 26656
             }
         ],

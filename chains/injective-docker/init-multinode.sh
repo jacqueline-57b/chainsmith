@@ -26,7 +26,7 @@
 set -e
 
 IMAGE="injectivelabs/injective-core:${INJ_TAG:-v1.18.2}"
-CHAIN_ID="injective-local-1"
+CHAIN_ID="injective-1337"
 INJ_HOME="/root/.injectived"
 DENOM="inj"
 
@@ -190,6 +190,7 @@ docker run --rm \
         .app_state.gov.params.expedited_voting_period = \"30s\" |
         .app_state.mint.params.mint_denom = \"inj\" |
         .app_state.evm.params.evm_denom = \"inj\" |
+        .app_state.txfees.params.min_gas_price = \"160000000.000000000000000000\" |
         .consensus_params.block.max_gas = \"30000000\"" $GENESIS > $GENESIS.tmp && \
     mv $GENESIS.tmp $GENESIS
 
@@ -294,15 +295,15 @@ for i in $(seq 1 $NUM_VALIDATORS); do
       grep -c "^\[api\]" $APP || echo "0"
       echo ">> Has [grpc]:"
       grep -c "^\[grpc\]" $APP || echo "0"
-      echo ">> Has [evm-rpc]:"
-      grep -c "^\[evm-rpc\]" $APP || echo "0"
-      echo ">> [evm-rpc] content:"
-      sed -n "/^\[evm-rpc\]/,/^\[/p" $APP 2>/dev/null || echo "(none)"
+      echo ">> Has [json-rpc]:"
+      grep -c "^\[json-rpc\]" $APP || echo "0"
+      echo ">> [json-rpc] content:"
+      sed -n "/^\[json-rpc\]/,/^\[/p" $APP 2>/dev/null | head -5 || echo "(none)"
       echo "---"
 
-      # Step A: Remove existing [api], [grpc], [evm-rpc] sections using sed ranges
+      # Step A: Remove existing [api], [grpc], [json-rpc] sections using sed ranges
       # For each: delete section header + all lines until next section header
-      for SECT in api grpc evm-rpc; do
+      for SECT in api grpc json-rpc; do
         if grep -q "^\[${SECT}\]" $APP; then
           sed -i "/^\[${SECT}\]/,/^\[/{/^\[${SECT}\]/d;/^\[/!d;}" $APP
         fi
@@ -313,7 +314,7 @@ for i in $(seq 1 $NUM_VALIDATORS); do
       echo "[api]" >> $APP
       echo "enable = true" >> $APP
       echo "swagger = false" >> $APP
-      echo "address = \"tcp://0.0.0.0:10337\"" >> $APP
+      echo "address = \"tcp://0.0.0.0:1317\"" >> $APP
       echo "max-open-connections = 1000" >> $APP
       echo "rpc-read-timeout = 10" >> $APP
       echo "rpc-write-timeout = 0" >> $APP
@@ -326,10 +327,24 @@ for i in $(seq 1 $NUM_VALIDATORS); do
       echo "address = \"0.0.0.0:9900\"" >> $APP
 
       echo "" >> $APP
-      echo "[evm-rpc]" >> $APP
+      echo "[json-rpc]" >> $APP
       echo "enable = true" >> $APP
-      echo "address = \"0.0.0.0:1317\"" >> $APP
-      echo "ws-address = \"0.0.0.0:1318\"" >> $APP
+      echo "address = \"0.0.0.0:8545\"" >> $APP
+      echo "ws-address = \"0.0.0.0:8546\"" >> $APP
+      echo "api = \"eth,net,web3\"" >> $APP
+      echo "gas-cap = 25000000" >> $APP
+      echo "evm-timeout = \"5s\"" >> $APP
+      echo "txfee-cap = 10" >> $APP
+      echo "filter-cap = 200" >> $APP
+      echo "feehistory-cap = 100" >> $APP
+      echo "logs-cap = 10000" >> $APP
+      echo "block-range-cap = 10000" >> $APP
+      echo "http-timeout = \"30s\"" >> $APP
+      echo "http-idle-timeout = \"2m0s\"" >> $APP
+      echo "allow-unprotected-txs = false" >> $APP
+      echo "max-open-connections = 0" >> $APP
+      echo "enable-indexer = true" >> $APP
+      echo "allow-indexer-gap = true" >> $APP
 
       # Base config
       sed -i "s|^minimum-gas-prices .*|minimum-gas-prices = \"500000000inj\"|" $APP
@@ -340,8 +355,8 @@ for i in $(seq 1 $NUM_VALIDATORS); do
       sed -n "/^\[api\]/,/^\[/p" $APP | head -6
       echo ">> [grpc]:"
       sed -n "/^\[grpc\]/,/^\[/p" $APP | head -4
-      echo ">> [evm-rpc]:"
-      sed -n "/^\[evm-rpc\]/,/^\[/p" $APP | head -5
+      echo ">> [json-rpc]:"
+      sed -n "/^\[json-rpc\]/,/^\[/p" $APP | head -5
       echo "---"
     '
   echo "   ✅ Validator $i: configured"
